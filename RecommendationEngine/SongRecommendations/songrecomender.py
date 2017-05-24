@@ -1,6 +1,6 @@
 import pandas
 from sklearn.cross_validation import train_test_split
-import RecommendationEngine.SongRecommendations.Recommenders as rec
+import RecommendationEngine.SongRecommendations.recommender as rec
 
 #Load the data
 triplets_file = 'C:/Users/Madhu/Desktop/1000000.txt'
@@ -25,9 +25,11 @@ song_df['song'] = song_df['title'].map(str) + " - " + song_df['artist_name']
 
 
 song_grouped=song_df.groupby(['song']).agg({'listen_count':'count'}).reset_index()
+#print(song_grouped)
 grouped_sum=song_grouped['listen_count'].sum()
+#print(grouped_sum)
 song_grouped['percentage']=song_grouped['listen_count'].div(grouped_sum)*100
-
+#print(song_grouped)
 song_grouped.sort_values(['listen_count', 'song'], ascending = [0,1])
 #print(song_grouped)
 
@@ -38,12 +40,10 @@ songs = song_df['song'].unique()
 #cross validtion data
 train_data, test_data = train_test_split(song_df, test_size = 0.20, random_state=0)
 
-
-
 #Simple popularity-based recommender class (Can be used as a black box)
 #Recommenders.popularity_recommender_py
-pbr=rec.popularity_recommender_py()
-pbr.create(train_data,'user_id','song')
+pbr=rec.Popular_based_recommender()
+pbr.build_model(train_data,'user_id','song')
 
 #Use the popularity model to make some predictions¶
 
@@ -78,4 +78,4 @@ out=is_model.recommend(user_id)
 
 #We can also apply the model to find similar songs to any song in the dataset
 ot=is_model.get_similar_items(['U Smile - Justin Bieber'])
-print(ot)
+#print(ot)
